@@ -34,7 +34,7 @@ cfg.trialdef.poststim       = -0.05; % in seconds
 cfg = ft_definetrial(cfg);
 
 %% artifact rejection
-if false %isfile(ARTFILE)
+if isfile(ARTFILE)
     load(ARTFILE, 'art_eye', 'art_muscle', 'badchannel');
 else   
     [art_eye, art_muscle, badchannel] = detect_artifacts(cfg.trl, EEGFILE, ARTFILE);
@@ -119,6 +119,13 @@ data = ft_preprocessing(cfg, data);
 cfg.dftfilter               = 'yes';
 cfg.dftfreq                 = [60, 120, 180, 240];
 data = ft_preprocessing(cfg, data);
+
+%% compute scalp current density with surface Laplacian
+cfg = [];
+cfg.elec = ELEC;
+cfg.degree = 20; % this is the default for 128 electrodes
+cfg.feedback = 'no';
+data = ft_scalpcurrentdensity(cfg, data);
 
 
 end

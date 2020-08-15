@@ -71,14 +71,14 @@ neighbors  = ft_prepare_neighbours(cfg);
 cfg = [];
 cfg.channel          = {'all', '-E126', '-E127'}; % all except eyes
 cfg.latency          = 'all';
-cfg.frequency        = [-40 40]; % relative to terminal f0
+cfg.frequency        = [-20 20]; % relative to terminal f0
 cfg.method           = 'montecarlo';
 cfg.statistic        = 'ft_statfun_actvsblT'; % activation vs baseline stat
 cfg.correctm         = 'cluster';
-cfg.clusteralpha     = 0.05;
+cfg.clusteralpha     = 0.025;
 cfg.clusterstatistic = 'maxsum';
-cfg.alpha            = 0.005;
-cfg.numrandomization = 'all';
+cfg.alpha            = 0.01;
+cfg.numrandomization = 5000;
 cfg.neighbours = neighbors;
 
 % specify study design
@@ -88,7 +88,7 @@ cfg.ivar = 1; % the 1st row in cfg.design contains IV
 cfg.uvar = 2; % and the second contains the subject number (unit variable)
 
 [stat] = ft_freqstatistics(cfg, activationAll, baselineAll);
-
+save('stat.mat', 'stat');
 
 %% plot group average TFR without mask
 cfg = [];
@@ -130,25 +130,38 @@ ft_clusterplot(cfg, stat);
 % baseline the TFR
 cfg.baseline = [-.55 -.3];
 cfg.baselinetype = 'relative'; % 'relative' computes ERSP
+cfg.parameter = 'powspctrm';
 [TFR_ersp] = ft_freqbaseline(cfg, TFR);
 % and then remove everything but activation window
 cfg= [];
 cfg.channel = {'all', '-E126', '-E127'}; % rm eye electrodes
 cfg.latency = [-.3 -.05];
-cfg.frequency = [-40 40];
+cfg.frequency = [-20 20];
 activation_ersp = ft_selectdata(cfg, TFR_ersp);
 
 % apply mask, only plotting first significant cluster
 % (since we only found one)
-activation_ersp.powspctrm = activation_ersp.powspctrm .* (stat.posclusterslabelmat == 1);
+activation_ersp.powspctrm = activation_ersp.powspctrm;% .* (stat.posclusterslabelmat == 1);
 % and plot
 cfg = [];
-cfg.zlim           = [0 3];
-cfg.colormap = jet(30);
+%cfg.zlim           = [0 3];
+%cfg.colormap = jet(30);
+cfg.colorbar     = 'yes';
 cfg.channel = 'all';
 cfg.elec = ELEC;
+cfg.showlabels = 'yes';
 figure;
 ft_multiplotTFR(cfg,activation_ersp);
+
+%% single plot
+cfg = [];
+cfg.maskstyle    = 'saturation';
+%cfg.zlim           = [1 5];
+cfg.baselinetype   = 'relative';
+cfg.channel      = 'E59';
+cfg.elec = ELEC;
+figure;
+ft_singleplotTFR(cfg,activation_ersp);  
 
 %% plot clusters
 cfg = [];
