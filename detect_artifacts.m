@@ -8,6 +8,9 @@ function [art_eye, art_muscle, badchannel] = detect_artifacts(trl, datafile, art
 % can make sure that all artifacts are being rejected and not too much
 % else, but it is nice to automate the end procedure for reproducibility.
 
+    %% define EOG channels
+    EOG = [126 8 127 25 17 1 32]; % Jia and Tyler (2019)
+
     %% manually remove bad channels
     % use "identify" button to get names of channels you see have problems
     if ~isfile(artfile)
@@ -46,6 +49,9 @@ function [art_eye, art_muscle, badchannel] = detect_artifacts(trl, datafile, art
     idx = 1:129;
     good_idx = idx(~ismember(idx, badchannel));
     
+    % we also want only the good eog channels
+    good_eog = EOG(~ismember(EOG, badchannel));
+    
     %% load continuous data (memory intensive)
     % the only purpose of this is to rereference in case the reference 
     % channel has noise in it, otherwise it would be better not
@@ -67,7 +73,7 @@ function [art_eye, art_muscle, badchannel] = detect_artifacts(trl, datafile, art
     cfg.artfct.reject = 'complete'; % reject full trial of artifact
     cfg.continuous = 'yes';
     % channel selection and padding
-    cfg.artfctdef.zvalue.channel = good_idx; % could just do EOG if you want
+    cfg.artfctdef.zvalue.channel = good_eog;
     cfg.artfctdef.zvalue.cutoff = 10;
     cfg.artfctdef.zvalue.trlpadding = 0;
     cfg.artfctdef.zvalue.artpadding = 0;

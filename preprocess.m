@@ -34,7 +34,7 @@ cfg.trialdef.poststim       = -0.05; % in seconds
 cfg = ft_definetrial(cfg);
 
 %% artifact rejection
-if isfile(ARTFILE)
+if false %isfile(ARTFILE)
     load(ARTFILE, 'art_eye', 'art_muscle', 'badchannel');
 else   
     [art_eye, art_muscle, badchannel] = detect_artifacts(cfg.trl, EEGFILE, ARTFILE);
@@ -70,7 +70,7 @@ cfg.bpfilter                = 'yes';
 cfg.bpfreq                  = [20 300];
 data = ft_preprocessing(cfg);
 
-%% reject artifacts
+%% reject artifactual trials
 cfg = [];
 cfg.artfctdef.reject            = 'complete'; 
 cfg.artfctdef.eog.artifact      = art_eye; 
@@ -85,34 +85,6 @@ for i = 1:128
 end
 data.label{129} = 'Cz';
 
-%% repair bad channels
-cfg         = [];
-cfg.elec    = ELEC;
-cfg.method  = 'distance';
-neighbours  = ft_prepare_neighbours(cfg, data);
-
-cfg = [];
-cfg.elec = ELEC;
-cfg.badchannel     = badchannel;
-cfg.method         = 'spline';
-cfg.neighbours     = neighbours;
-data = ft_channelrepair(cfg, data);
-
-%% detrend the data now that bad segments are removed 
-cfg             = [];
-cfg.channel     = 'all';
-cfg.demean      = 'yes';
-cfg.polyremoval = 'yes';
-cfg.polyorder   = 1; 
-data = ft_preprocessing(cfg, data);
-
-%% robustly re-reference detrended data (de Cheveigne & Arzounian, 2018) 
-cfg                         = [];
-cfg.channel                 = 'all';
-% re-reference since average is no longer the same after interpolation
-cfg.reref                   = 'yes';
-cfg.refchannel              = 'all'; 
-data = ft_preprocessing(cfg, data);
 
 %% remove line noise
 % notch filter 60 Hz and harmonics
@@ -121,10 +93,12 @@ cfg.dftfreq                 = [60, 120, 180, 240];
 data = ft_preprocessing(cfg, data);
 
 %% compute scalp current density with surface Laplacian
+% while interpolating bad channels
 cfg = [];
 cfg.elec = ELEC;
 cfg.degree = 20; % this is the default for 128 electrodes
 cfg.feedback = 'no';
+cfg.badchannel     = badchannel;
 data = ft_scalpcurrentdensity(cfg, data);
 
 
