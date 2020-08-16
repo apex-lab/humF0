@@ -142,8 +142,8 @@ for k = 1:(length(j)-1)
    cfg.highlightchannel = 'E71';
    cfg.highlightcolor = [1 0 0];
    cfg.highlightsymbol = 'x';
-   cfg.highlightsize = 3;
-   cfg.markersize = 1;
+   cfg.highlightsize = 7;
+   cfg.markersize = 2;
    cfg.elec      = ELEC;
    cfg.interactive = 'no';
    cfg.interplimits = 'head';
@@ -152,7 +152,7 @@ for k = 1:(length(j)-1)
    beg = num2str(j(k)*1000);
    en = num2str(j(k+1)*1000);
    txt = [beg ' to ' en ' ms'];
-   title(txt);
+   title(txt, 'FontSize', 12);
 end
 
 subplot(4, 5, 11:20);
@@ -166,9 +166,12 @@ cfg.elec = ELEC;
 cfg.colorbar = 'yes';
 cfg.title = 'Occipitoparietal Electrode E71';
 ft_singleplotTFR(cfg, TFR_ersp); 
-xlabel('Time (sec) Relative to Voicing Onset');
-ylabel('Frequency (Hz) Relative to F0');
+xlabel('Time (sec) Relative to Voicing Onset', 'FontSize', 15);
+ylabel('Frequency (Hz) Relative to F0', 'FontSize', 15);
+title('Occipitoparietal Electrode E71', 'FontSize', 15);
 
+%% save figure (adjust in gui window manually first)
+print('f0_cluster_laplacian.png','-dpng','-r500');
 
 
 
