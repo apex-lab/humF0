@@ -167,8 +167,10 @@ j = [-.3:timestep:-.05];
 
 [i1,i2] = match_str(activation_ersp.label, stat.label);
 
+f = figure;
+[a, ~] = tight_subplot(2, 5, 0, 0, 0);
 for k = 1:(length(j)-1)
-   subplot(2,5,k);
+   set(f, 'currentaxes', a(k));
    cfg = [];
    cfg.xlim = [j(k) j(k+1)];   % time interval of the subplot
    cfg.zlim = [0 1.2];
@@ -187,18 +189,30 @@ for k = 1:(length(j)-1)
    cfg.highlightsymbol = 'o';
    cfg.highlightsize = 1;
    cfg.markersize = 1;
-   cfg.comment     = 'xlim';
-   cfg.commentpos  = 'title';
    cfg.elec      = ELEC;
    cfg.interactive = 'no';
    cfg.interplimits = 'head';
+   cfg.comment = 'no';
    ft_topoplotER(cfg, activation_ersp);
+   beg = num2str(j(k)*1000);
+   en = num2str(j(k+1)*1000);
+   txt = [beg ' to ' en ' ms'];
+   title(txt);
 end
 
-
-
-
-
+% % make subplots less far apart
+% for k = 1:5
+%     pos = get(hAxis(k), 'Position');
+%     pos(2) = 0.5 ; % shift down
+%     pos(4) = 0.5 ; % make taller
+%     set(hAxis(k), 'Position', pos)
+% end
+% for k = 6:10
+%     pos = get(hAxis(k), 'Position');
+%     pos(2) = 0.3 ; % shift down
+%     pos(4) = 0.5 ; % make taller
+%     set(hAxis(k), 'Position', pos)
+% end
 
 
 
