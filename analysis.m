@@ -111,7 +111,7 @@ cfg.latency = [-.3 -.05];
 cfg.frequency = [-5 5];
 cfg.avgoverfreq = 'yes';
 activation_ersp = ft_selectdata(cfg, TFR_ersp);
-activation_ersp.powspctrm = activation_ersp.powspctrm .* (stat.posclusterslabelmat == 1);
+activation_ersp.powspctrm = activation_ersp.powspctrm .* pos;
 
 
 % now make the plot
