@@ -91,52 +91,7 @@ cfg.uvar = 2; % and the second contains the subject number (unit variable)
 
 [stat] = ft_freqstatistics(cfg, activationAll, baselineAll);
 save('stat.mat', 'stat');
-
-%% plot group average TFR without mask
-cfg = [];
-cfg.maskstyle    = 'saturation';
-%cfg.zlim           = [1 5];
-cfg.baseline       = [-.55 -.3];
-cfg.ylim           = [-40 40];
-cfg.xlim           = [-.3 -0.05];
-cfg.baselinetype   = 'relchange';
-cfg.colormap = jet(30);
-cfg.channel      = {'all', '-E126', '-E127'};
-cfg.elec = ELEC;
-figure;
-ft_multiplotTFR(cfg,TFR);
-
-%% 
-cfg = [];
-cfg.maskstyle    = 'saturation';
-%cfg.zlim           = [1 5];
-cfg.baseline       = [-.55 -.3];
-cfg.ylim           = [-40 40];
-cfg.xlim           = [-.3 -0.05];
-cfg.baselinetype   = 'relative';
-cfg.colormap = jet(30);
-cfg.channel      = 'Cz';
-cfg.elec = ELEC;
-figure;
-ft_singleplotTFR(cfg,TFR);  
-
-
-%% single plot (without mask)
-% baseline the TFR
-cfg.baseline = [-.55 -.3];
-cfg.baselinetype = 'relative'; % 'relative' computes ERSP
-cfg.parameter = 'powspctrm';
-[TFR_ersp] = ft_freqbaseline(cfg, TFR);
-
-cfg = [];
-cfg.maskstyle = 'saturation';
-cfg.ylim = [-40 40];
-cfg.xlim = [-.3 -.05];
-%cfg.zlim = [.8 ];
-cfg.channel      = 'E71';
-cfg.elec = ELEC;
-figure;
-ft_singleplotTFR(cfg, TFR_ersp);  
+  
 
 
 %% cluster plot (masked)
@@ -168,12 +123,12 @@ j = [-.3:timestep:-.05];
 [i1,i2] = match_str(activation_ersp.label, stat.label);
 
 f = figure;
-[a, ~] = tight_subplot(2, 5, 0, 0, 0);
+[a, ~] = tight_subplot(4, 5, 0, 0, 0);
 for k = 1:(length(j)-1)
    set(f, 'currentaxes', a(k));
    cfg = [];
    cfg.xlim = [j(k) j(k+1)];   % time interval of the subplot
-   cfg.zlim = [0 1.2];
+   cfg.zlim = [.8 1.5];
    % If a channel is in a to-be-plotted cluster, then
    % the element of pos_int with an index equal to that channel
    % number will be set to 1 (otherwise 0).
@@ -186,8 +141,8 @@ for k = 1:(length(j)-1)
    % Get the index of the to-be-highlighted channel
    cfg.highlightchannel = 'E71';
    cfg.highlightcolor = [1 0 0];
-   cfg.highlightsymbol = 'o';
-   cfg.highlightsize = 1;
+   cfg.highlightsymbol = 'x';
+   cfg.highlightsize = 3;
    cfg.markersize = 1;
    cfg.elec      = ELEC;
    cfg.interactive = 'no';
@@ -200,22 +155,19 @@ for k = 1:(length(j)-1)
    title(txt);
 end
 
-% % make subplots less far apart
-% for k = 1:5
-%     pos = get(hAxis(k), 'Position');
-%     pos(2) = 0.5 ; % shift down
-%     pos(4) = 0.5 ; % make taller
-%     set(hAxis(k), 'Position', pos)
-% end
-% for k = 6:10
-%     pos = get(hAxis(k), 'Position');
-%     pos(2) = 0.3 ; % shift down
-%     pos(4) = 0.5 ; % make taller
-%     set(hAxis(k), 'Position', pos)
-% end
-
-
-
+subplot(4, 5, 11:20);
+cfg = [];
+cfg.maskstyle = 'saturation';
+cfg.ylim = [-40 40];
+cfg.xlim = [-.3 -.05];
+cfg.zlim = [.8 1.5];
+cfg.channel = 'E71';
+cfg.elec = ELEC;
+cfg.colorbar = 'yes';
+cfg.title = 'Occipitoparietal Electrode E71';
+ft_singleplotTFR(cfg, TFR_ersp); 
+xlabel('Time (sec) Relative to Voicing Onset');
+ylabel('Frequency (Hz) Relative to F0');
 
 
 
